@@ -7,6 +7,7 @@ import pickle
 import glob
 import hashlib
 import subprocess
+import tempfile
 
 def main():
     rcfile = os.path.expanduser('~/.oryxrc')
@@ -25,9 +26,14 @@ def main():
     notebook = [n for n in notebooks if n.name == 'Notability PDFs'][0]
     # TODO: make tags the sub-notebook the files are in
     for f in pdf_files:
-        # subprocess.check_call(['convert', '-density', '300', f, '-resize', '75%', os.path.join('/tmp', os.path.basename(f)[:-3] + 'png')])
-        note = create_note(notebook, f)
+        print('Uploading', f)
+        # TODO: convert notes that are handwritten into images (lesser quality)
+        img_pdf = pdf_to_image(f)
+        note = create_note(notebook, [f, img_pdf])
         note_store.createNote(config['devToken'], note)
+
+def make_resource():
+    pass
 
 def create_note(notebook, pdf):
     note = ttypes.Note()
@@ -54,6 +60,13 @@ def create_note(notebook, pdf):
     resource.attributes = rAttrs
     note.resources = [resource]
     return note
+
+def pdf_to_image(pdf_path, quality=100, typ='png', density=150):
+    handle, path = tempfile.mkstemp()
+    subprocess.check_call(['convert', '-density', str(density), pdf_path, '-quality', str(quality), path+'.'+typ])
+    subprocess.check_call(['convert', path + '*.'+typ, '-quality', '100', path+'.pdf'])
+    subprocess.check_call(['rm', path + '*.' + typ])
+    return path + '.pdf'
 
 if __name__=='__main__':
     main()
