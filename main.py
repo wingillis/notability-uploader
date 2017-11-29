@@ -27,46 +27,57 @@ def main():
     # TODO: make tags the sub-notebook the files are in
     for f in pdf_files:
         print('Uploading', f)
-        # TODO: convert notes that are handwritten into images (lesser quality)
-        img_pdf = pdf_to_image(f)
-        note = create_note(notebook, [f, img_pdf])
+        imgs = pdf_to_image(f)
+        note = create_note(notebook, f, imgs)
         note_store.createNote(config['devToken'], note)
+        for img in imgs:
+            os.remove(img)
 
-def make_resource():
-    pass
+def create_resource(pdf, typ='application/pdf'):
+    m5hash = hashlib.md5()
+    resource = ttypes.Resource()
+    rattr = ttypes.ResourceAttributes()
+    # rattr.attachment = True
+    rattr.fileName = os.path.basename(pdf)
+    resource.mime = typ
+    resource.attributes = rattr
+    data = ttypes.Data()
+    with open(pdf, 'rb') as f:
+        contents = f.read()
+    m5hash.update(contents)
+    h = m5hash.hexdigest()
+    data.bodyHash = h
+    data.size = len(contents)
+    data.body = contents
+    resource.data = data
+    return resource, h
 
-def create_note(notebook, pdf):
+def create_note(notebook, pdf, images):
+    media = '<en-media type="{typ}" hash="{hash}" /><br/>'
     note = ttypes.Note()
     note.notebookGuid = notebook.guid
     note.title = os.path.basename(pdf)
-    md5 = hashlib.md5()
-    with open(pdf, 'rb') as f:
-        f_contents = f.read()
-        md5.update(f_contents)
-    hashval = md5.hexdigest()
-    media = '<en-media type="application/pdf" hash="{hash}" />'.format(hash=hashval)
     note.content = '''<?xml version="1.0" encoding="UTF-8"?>
     <!DOCTYPE en-note SYSTEM "http://xml.evernote.com/pub/enml2.dtd">
-    <en-note>{note_media}</en-note>'''.format(note_media=media)
-    resource = ttypes.Resource()
-    rAttrs = ttypes.ResourceAttributes()
-    rAttrs.fileName = os.path.basename(pdf)
-    resource.mime = 'application/pdf'
-    data = ttypes.Data()
-    data.bodyHash = hashval
-    data.size = len(f_contents)
-    data.body = f_contents
-    resource.data = data
-    resource.attributes = rAttrs
-    note.resources = [resource]
+    <en-note>'''
+    resources = []
+    resource, h = create_resource(pdf)
+    resources += [resource]
+    note.content += media.format(typ='application/pdf', hash=h)
+    for img in images:
+        resource, h = create_resource(img, typ='image/png')
+        note.content += media.format(typ='image/png', hash=h)
+        resources += [resource]
+    note.content += '</en-note>'
+    note.resources = resources
     return note
 
-def pdf_to_image(pdf_path, quality=100, typ='png', density=150):
+def pdf_to_image(pdf_path, quality=100, typ='png', density=100):
     handle, path = tempfile.mkstemp()
     subprocess.check_call(['convert', '-density', str(density), pdf_path, '-quality', str(quality), path+'.'+typ])
-    subprocess.check_call(['convert', path + '*.'+typ, '-quality', '100', path+'.pdf'])
-    subprocess.check_call(['rm', path + '*.' + typ])
-    return path + '.pdf'
+    # subprocess.check_call(['convert', path + '*.'+typ, '-quality', '100', path+'.pdf'])
+    files = glob.glob(path + '*.' + typ)
+    return files
 
 if __name__=='__main__':
     main()
