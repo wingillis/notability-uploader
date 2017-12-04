@@ -27,7 +27,7 @@ def get_highlighted_regions(im, color):
     im_tmp = im.copy()
     for i in range(im.shape[0]):
         for j in range(im.shape[1]):
-            im_tmp[i,j,:] = im_tmp[i,j,:] - color
+            im_tmp[i, j, :] = im_tmp[i, j, :] - color
     blobs = binary_dilation(rgb2gray(im_tmp) < 0.01, disk(5))
     labeled = label(blobs)
     props = regionprops(labeled)
