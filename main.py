@@ -8,6 +8,7 @@ import glob
 import hashlib
 import subprocess
 import tempfile
+import highlight_finder as hf
 
 def main():
     rcfile = os.path.expanduser('~/.oryxrc')
@@ -24,14 +25,24 @@ def main():
     note_store = client.get_note_store()
     notebooks = note_store.listNotebooks()
     notebook = [n for n in notebooks if n.name == 'Notability PDFs'][0]
+    highlight_notebook = [n for n in notebooks if n.name == 'Highlights'][0]
     # TODO: make tags the sub-notebook the files are in
     for f in pdf_files:
         print('Uploading', f)
         imgs = pdf_to_image(f)
         note = create_note(notebook, f, imgs)
+        highlights = create_highlights(imgs)
+        note2 = create_note(highlight_notebook, f, highlights)
         note_store.createNote(config['devToken'], note)
-        for img in imgs:
+        note_store.createNote(config['devToken'], note2)
+        for img in imgs+highlights:
             os.remove(img)
+
+def create_highlights(imgs):
+    imfiles = []
+    for im in imgs:
+        imfiles += hf.main(im)
+    return imfiles
 
 def create_resource(pdf, typ='application/pdf'):
     m5hash = hashlib.md5()
