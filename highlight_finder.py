@@ -20,8 +20,7 @@ def save_highlight_extract(im, bounds, color, fname):
     basename = os.path.basename(fname)
     for i, (minr, minc, maxr, maxc) in enumerate(bounds):
         tmp = im[minr:maxr, minc:maxc]
-        imsave(os.path.join(path, '{}-{}-{}.png'.format(color, i, basename)), tmp)
-
+        imsave(os.path.join(path, '{}-{}-{}.png'.format(color, i, basename[:-4])), tmp)
 
 def get_highlighted_regions(im, color):
     im_tmp = im.copy()

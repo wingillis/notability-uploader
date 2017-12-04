@@ -16,7 +16,7 @@
 				<string>/Users/wgillis/anaconda2/bin/python</string>
         <string>/Users/wgillis/dev/notability-uploader/main.py</string>
     </array>
-    <!-- Run every hour -->
+    <!-- Run every 4 hours -->
 		<key>StandardErrorPath</key>
 		<string>/Users/wgillis/notability.log</string>
     <key>StartInterval</key>
