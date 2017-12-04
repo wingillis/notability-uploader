@@ -25,16 +25,12 @@ def main():
     note_store = client.get_note_store()
     notebooks = note_store.listNotebooks()
     notebook = [n for n in notebooks if n.name == 'Notability PDFs'][0]
-    highlight_notebook = [n for n in notebooks if n.name == 'Highlights'][0]
     # TODO: make tags the sub-notebook the files are in
     for f in pdf_files:
         print('Uploading', f)
         imgs = pdf_to_image(f)
-        note = create_note(notebook, f, imgs)
         highlights = create_highlights(imgs)
-        print(highlights)
-        note2 = create_note(highlight_notebook, f, highlights)
-        note_store.createNote(config['devToken'], note)
+        note2 = create_note(notebook, f, highlights)
         note_store.createNote(config['devToken'], note2)
         for img in imgs+highlights:
             os.remove(img)
@@ -75,13 +71,13 @@ def create_note(notebook, pdf, images):
     <!DOCTYPE en-note SYSTEM "http://xml.evernote.com/pub/enml2.dtd">
     <en-note>'''
     resources = []
-    resource, h = create_resource(pdf)
-    resources += [resource]
-    note.content += media.format(typ='application/pdf', hash=h)
     for img in images:
         resource, h = create_resource(img, typ='image/png')
         note.content += media.format(typ='image/png', hash=h)
         resources += [resource]
+    resource, h = create_resource(pdf)
+    resources += [resource]
+    note.content += media.format(typ='application/pdf', hash=h)
     note.content += '</en-note>'
     note.resources = resources
     return note
