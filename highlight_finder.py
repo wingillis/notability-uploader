@@ -12,13 +12,16 @@ def main(fname):
     im = imread(fname)
     blu_bnd = get_highlighted_regions(im, blu_color)
     yel_bnd = get_highlighted_regions(im, yel_color)
-    fpath = os.path.dirname(fname)
-    for i, (minr, minc, maxr, maxc) in enumerate(blu_bnd):
+    save_highlight_extract(im, yel_bnd, 'yellow', fname)
+    save_highlight_extract(im, blu_bnd, 'blue', fname)
+
+def save_highlight_extract(im, bounds, color, fname):
+    path = os.path.dirname(fname)
+    basename = os.path.basename(fname)
+    for i, (minr, minc, maxr, maxc) in enumerate(bounds):
         tmp = im[minr:maxr, minc:maxc]
-        imsave(os.path.join(fpath, 'blue-{}-{}.png'.format(i, os.path.basename(fname))), tmp)
-    for i, (minr, minc, maxr, maxc) in enumerate(yel_bnd):
-        tmp = im[minr:maxr, minc:maxc]
-        imsave(os.path.join(fpath, 'yellow-{}-{}.png'.format(i, os.path.basename(fname))), tmp)
+        imsave(os.path.join(path, '{}-{}-{}.png'.format(color, i, basename)), tmp)
+
 
 def get_highlighted_regions(im, color):
     im_tmp = im.copy()
