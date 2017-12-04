@@ -32,6 +32,7 @@ def main():
         imgs = pdf_to_image(f)
         note = create_note(notebook, f, imgs)
         highlights = create_highlights(imgs)
+        print(highlights)
         note2 = create_note(highlight_notebook, f, highlights)
         note_store.createNote(config['devToken'], note)
         note_store.createNote(config['devToken'], note2)
@@ -41,7 +42,9 @@ def main():
 def create_highlights(imgs):
     imfiles = []
     for im in imgs:
-        imfiles += hf.main(im)
+        tmp = hf.main(im)
+        if tmp:
+            imfiles += tmp
     return imfiles
 
 def create_resource(pdf, typ='application/pdf'):

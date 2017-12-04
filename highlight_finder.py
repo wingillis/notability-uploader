@@ -16,7 +16,7 @@ def main(fname):
     blu_bnd = get_highlighted_regions(im, blu_color)
     yel_bnd = get_highlighted_regions(im, yel_color)
     fs = save_highlight_extract(im, yel_bnd, 'yellow', fname)
-    fs += [save_highlight_extract(im, blu_bnd, 'blue', fname)]
+    fs += save_highlight_extract(im, blu_bnd, 'blue', fname)
     return fs
 
 def save_highlight_extract(im, bounds, color, fname):
