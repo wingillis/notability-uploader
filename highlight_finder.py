@@ -9,8 +9,10 @@ from skimage.measure import label, regionprops
 def main(fname):
     yel_color = np.array([250, 239, 190])
     blu_color = np.array([192, 240, 246])
-    im = rgba2rgb(imread(fname))*255
-    im = im.astype('uint8')
+    im = imread(fname)
+    if im.shape[2] > 3:
+        im = rgba2rgb(im)*255
+        im = im.astype('uint8')
     blu_bnd = get_highlighted_regions(im, blu_color)
     yel_bnd = get_highlighted_regions(im, yel_color)
     fs = save_highlight_extract(im, yel_bnd, 'yellow', fname)
