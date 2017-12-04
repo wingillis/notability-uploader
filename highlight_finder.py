@@ -26,7 +26,7 @@ def save_highlight_extract(im, bounds, color, fname):
     for i, (minr, minc, maxr, maxc) in enumerate(bounds):
         tmp = im[minr:maxr, minc:maxc]
         f = '{}-{}-{}.png'.format(color, i, basename[:-4])
-        fnames += [f]
+        fnames += [os.path.join(path, f)]
         imsave(os.path.join(path, f), tmp)
     return fnames
 
