@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+		<key>EnvironmentVariables</key>
+      <dict>
+        <key>PATH</key>
+          <string>/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin</string>
+      </dict>
+    <key>Label</key>
+    <!-- The label should be the same as the filename without the extension -->
+    <string>com.wingillis.notability</string>
+    <!-- Specify how to run your program here -->
+    <key>ProgramArguments</key>
+    <array>
+				<string>/Users/wgillis/anaconda2/bin/python</string>
+        <string>/Users/wgillis/dev/notability-uploader/main.py</string>
+    </array>
+    <!-- Run every hour -->
+		<key>StandardErrorPath</key>
+		<string>/Users/wgillis/notability.log</string>
+    <key>StartInterval</key>
+    <integer>14400</integer><!-- seconds -->
+</dict>
+</plist>
