@@ -11,11 +11,11 @@ import tempfile
 
 def main():
     rcfile = os.path.expanduser('~/.oryxrc')
-    with open('last-checked.pkl', 'r') as f:
+    with open(os.path.dirname(__file__) + '/last-checked.pkl', 'r') as f:
         last_checked = pickle.load(f)
     with open(rcfile, 'r') as f:
         config = json.load(f)
-    with open('last-checked.pkl', 'w') as f:
+    with open(os.path.dirname(__file__) + '/last-checked.pkl', 'w') as f:
         pickle.dump(time.time(), f)
     pdf_path = '/Users/wgillis/Dropbox (HMS)/Notability'
     pdf_files = glob.glob(os.path.join(pdf_path, '**', '*.pdf')) + glob.glob(os.path.join(pdf_path, '*.pdf'))
@@ -74,7 +74,7 @@ def create_note(notebook, pdf, images):
 
 def pdf_to_image(pdf_path, quality=100, typ='png', density=100):
     handle, path = tempfile.mkstemp()
-    subprocess.check_call(['convert', '-density', str(density), pdf_path, '-quality', str(quality), path+'.'+typ])
+    subprocess.check_call(['/usr/local/bin/convert', '-density', str(density), pdf_path, '-quality', str(quality), path+'.'+typ])
     # subprocess.check_call(['convert', path + '*.'+typ, '-quality', '100', path+'.pdf'])
     files = glob.glob(path + '*.' + typ)
     return files
