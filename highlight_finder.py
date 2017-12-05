@@ -11,9 +11,9 @@ from skimage.measure import label, regionprops
 def main(fname):
     templates = dict(yellow=np.array([251, 240, 187]),
                      blue=np.array([210, 255, 245]))
-    im = imread(fname).astype('int64')
+    im = imread(fname)
     if im.shape[2] > 3:
-        im = (rgba2rgb(im)*255).astype('int64')
+        im = rgba2rgb(im)*255
     im_files = {}
     for key, template in templates.items():
         print('Testing {}'.format(key))
@@ -37,7 +37,7 @@ def save_highlight_extract(im, bounds, color, fname):
         imsave(os.path.join(path, f), tmp.astype('uint8'))
     return fnames
 
-def get_highlighted_regions(im, color, threshold=12):
+def get_highlighted_regions(im, color, threshold=15):
     disk_size = 7
     # reshape to 2d matrix
     im_tmp = im.reshape((im.shape[0]*im.shape[1], im.shape[2]))
