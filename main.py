@@ -14,11 +14,13 @@ from evernote.edam.type import ttypes
 
 def main():
     rcfile = os.path.expanduser('~/.oryxrc')
-    with open(os.path.dirname(__file__) + '/last-checked.pkl', 'r') as f:
+    script_path = os.path.dirname(__file__)
+    time_file = os.path.join(script_path, 'last-checked.pkl')
+    with open(time_file, 'r') as f:
         last_checked = pickle.load(f)
     with open(rcfile, 'r') as f:
         config = json.load(f)
-    with open(os.path.dirname(__file__) + '/last-checked.pkl', 'w') as f:
+    with open(time_file, 'w') as f:
         pickle.dump(time.time(), f)
     pdf_path = '/Users/wgillis/Dropbox (HMS)/Notability'
     pdf_files = glob.glob(os.path.join(pdf_path, '**', '*.pdf')) + glob.glob(os.path.join(pdf_path, '*.pdf'))
