@@ -97,7 +97,7 @@ def create_note(notebook, pdf, images, tag):
     note.resources = resources
     return note
 
-def pdf_to_image(pdf_path, quality=100, typ='png', density=300):
+def pdf_to_image(pdf_path, quality=100, typ='png', density=150):
     handle, path = tempfile.mkstemp()
     subprocess.check_call(['/usr/local/bin/convert', '-density', str(density), pdf_path, '-quality', str(quality), path+'.'+typ])
     files = glob.glob(path + '*.' + typ)
