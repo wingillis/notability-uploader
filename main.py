@@ -37,8 +37,11 @@ def main():
         highlights = create_highlights(imgs)
         note2 = create_note(notebook, f, highlights, tag)
         note_store.createNote(config['devToken'], note2)
-        for img in imgs+list(highlights.values()):
+        for img in imgs:
             os.remove(img)
+        for imgs in highlights.values():
+            for img in imgs:
+                os.remove(img)
 
 def create_highlights(imgs):
     highlights = defaultdict(list)
