@@ -46,7 +46,7 @@ def create_highlights(imgs):
         tmp = hf.main(im)
         if tmp:
             for key in tmp:
-                highlights[key] += tmp
+                highlights[key] += tmp[key]
     return highlights
 
 def create_resource(pdf, typ='application/pdf'):
