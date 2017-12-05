@@ -14,13 +14,13 @@ def main(fname):
     im = imread(fname)
     if im.shape[2] > 3:
         im = rgba2rgb(im)*255
-    im_files = []
+    im_files = {}
     for key, template in templates.items():
         print('Testing {}'.format(key))
         regions = get_highlighted_regions(im, template)
         if regions:
             print('Found {} highlights'.format(len(regions)))
-            im_files += save_highlight_extract(im, regions, key, fname)
+            im_files[key] = save_highlight_extract(im, regions, key, fname)
         else:
             print('No highlights found for this color')
 
