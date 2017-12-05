@@ -37,7 +37,7 @@ def save_highlight_extract(im, bounds, color, fname):
         imsave(os.path.join(path, f), tmp.astype('uint8'))
     return fnames
 
-def get_highlighted_regions(im, color, threshold=15):
+def get_highlighted_regions(im, color, threshold=13):
     disk_size = 7
     # reshape to 2d matrix
     im_tmp = im.reshape((im.shape[0]*im.shape[1], im.shape[2]))
