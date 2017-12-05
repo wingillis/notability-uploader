@@ -22,7 +22,7 @@ def main():
         config = json.load(f)
     with open(time_file, 'w') as f:
         pickle.dump(time.time(), f)
-    pdf_path = '/Users/wgillis/Dropbox (HMS)/Notability'
+    pdf_path = '/Users/wgillis/Dropbox (HMS)/Notability/'
     pdf_files = glob.glob(os.path.join(pdf_path, '**', '*.pdf')) + glob.glob(os.path.join(pdf_path, '*.pdf'))
     pdf_files = [f for f in pdf_files if os.stat(f).st_mtime > last_checked]
     tags = [os.path.dirname(f.replace(pdf_path, '')) for f in pdf_files]
