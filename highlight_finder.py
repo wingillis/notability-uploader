@@ -1,23 +1,24 @@
 import sys
 import os
 import numpy as np
+import scipy.stats as stats
 from skimage.io import imread, imsave
 from skimage.color import rgb2gray, rgba2rgb
 from skimage.morphology import binary_dilation, disk
 from skimage.measure import label, regionprops
 
 def main(fname):
-    yel_color = np.array([250, 239, 190])
-    blu_color = np.array([192, 240, 246])
+    templates = dict(yellow=np.array([250, 239, 190]),
+                     blue=np.array([192, 240, 246]))
     im = imread(fname)
     if im.shape[2] > 3:
         im = rgba2rgb(im)*255
-        im = im.astype('uint8')
-    blu_bnd = get_highlighted_regions(im, blu_color)
-    yel_bnd = get_highlighted_regions(im, yel_color)
-    fs = save_highlight_extract(im, yel_bnd, 'yellow', fname)
-    fs += save_highlight_extract(im, blu_bnd, 'blue', fname)
-    return fs
+    im_files = []
+    for key, template in templates.items():
+        regions = get_highlighted_regions(im, template)
+        im_files += save_highlight_extract(im, regions, key, fname)
+
+    return im_files
 
 def save_highlight_extract(im, bounds, color, fname):
     path = os.path.dirname(fname)
