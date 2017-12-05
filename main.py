@@ -73,7 +73,7 @@ def create_resource(pdf, typ='application/pdf'):
 
 def create_note(notebook, pdf, images, tag):
     '''images is a len=2 list where first are blue and then yellow highlights'''
-    media = '<en-media type="{typ}" hash="{hash}" /><br/>'
+    media = '<en-media type="{typ}" hash="{hash}" /><br/><br/>'
     highlight_choices = defaultdict(str, blue='To read later:<br/>',
                                     yellow='To remember:<br/>')
     note = ttypes.Note()
@@ -82,7 +82,7 @@ def create_note(notebook, pdf, images, tag):
     note.title = os.path.basename(pdf)
     note.content = '''<?xml version="1.0" encoding="UTF-8"?>
     <!DOCTYPE en-note SYSTEM "http://xml.evernote.com/pub/enml2.dtd">
-    <en-note><h2>Highlights:</h2><br/><br/>'''
+    <en-note><h2>Highlights:</h2><br/>'''
     resources = []
     for color, imgs in images.items():
         note.content += highlight_choices[color]
