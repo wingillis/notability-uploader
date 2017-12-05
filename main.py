@@ -32,7 +32,7 @@ def main():
     notebook = [n for n in notebooks if n.name == 'Notability PDFs'][0]
     # TODO: make tags the sub-notebook the files are in
     for f, tag in zip(pdf_files, tags):
-        print('Uploading', f)
+        print('Uploading {}'.format(f))
         imgs = pdf_to_image(f)
         highlights = create_highlights(imgs)
         note2 = create_note(notebook, f, highlights, tag)
