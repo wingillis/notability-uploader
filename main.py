@@ -82,7 +82,7 @@ def create_note(notebook, pdf, images, tag):
     note.title = os.path.basename(pdf)
     note.content = '''<?xml version="1.0" encoding="UTF-8"?>
     <!DOCTYPE en-note SYSTEM "http://xml.evernote.com/pub/enml2.dtd">
-    <en-note><h2>Highlights:</h2><br/>'''
+    <en-note><h2>Highlights:</h2>'''
     resources = []
     for color, imgs in images.items():
         note.content += highlight_choices[color]
