@@ -16,15 +16,14 @@ def main():
     rcfile = os.path.expanduser('~/.oryxrc')
     script_path = os.path.dirname(__file__)
     time_file = os.path.join(script_path, 'last-checked.pkl')
+    start_time = time.time()
     with open(time_file, 'r') as f:
         last_checked = pickle.load(f)
     with open(rcfile, 'r') as f:
         config = json.load(f)
-    with open(time_file, 'w') as f:
-        pickle.dump(time.time(), f)
     pdf_path = '/Users/wgillis/Dropbox (HMS)/Notability/'
     pdf_files = glob.glob(os.path.join(pdf_path, '**', '*.pdf')) + glob.glob(os.path.join(pdf_path, '*.pdf'))
-    pdf_files = [f for f in pdf_files if os.stat(f).st_mtime > last_checked]
+    pdf_files = [f for f in pdf_files if (os.stat(f).st_mtime > last_checked) and ('Linear Algebra' not in f)]
     tags = [os.path.dirname(f.replace(pdf_path, '')) for f in pdf_files]
     client = EvernoteClient(token=config['devToken'], sandbox=False)
     note_store = client.get_note_store()
@@ -32,16 +31,22 @@ def main():
     notebook = [n for n in notebooks if n.name == 'Notability PDFs'][0]
     # TODO: make tags the sub-notebook the files are in
     for f, tag in zip(pdf_files, tags):
-        print('Uploading {}'.format(f))
-        imgs = pdf_to_image(f)
-        highlights = create_highlights(imgs)
-        note2 = create_note(notebook, f, highlights, tag)
-        note_store.createNote(config['devToken'], note2)
-        for img in imgs:
-            os.remove(img)
-        for imgs in highlights.values():
+        try:
+            print('Uploading {}'.format(f))
+            imgs = pdf_to_image(f)
+            highlights = create_highlights(imgs)
+            note2 = create_note(notebook, f, highlights, tag)
+            note_store.createNote(config['devToken'], note2)
             for img in imgs:
                 os.remove(img)
+            for imgs in highlights.values():
+                for img in imgs:
+                    os.remove(img)
+        except Exception as e:
+            print('Exception occurred', e)
+            print('Continuing with next PDF')
+    with open(time_file, 'w') as f:
+        pickle.dump(start_time, f)
 
 def create_highlights(imgs):
     highlights = defaultdict(list)
@@ -75,10 +80,12 @@ def create_note(notebook, pdf, images, tag):
     '''images is a len=2 list where first are blue and then yellow highlights'''
     media = '<en-media type="{typ}" hash="{hash}" /><br/><br/>'
     highlight_choices = defaultdict(str, blue='To read later:<br/>',
+                                    blue2='To read later:<br/>',
                                     yellow='To remember:<br/>')
     note = ttypes.Note()
     note.notebookGuid = notebook.guid
-    note.tagNames = [tag]
+    if tag:
+        note.tagNames = [tag]
     note.title = os.path.basename(pdf)
     note.content = '''<?xml version="1.0" encoding="UTF-8"?>
     <!DOCTYPE en-note SYSTEM "http://xml.evernote.com/pub/enml2.dtd">

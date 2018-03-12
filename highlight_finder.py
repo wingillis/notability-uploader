@@ -10,9 +10,10 @@ from skimage.measure import label, regionprops
 
 def main(fname):
     templates = dict(yellow=np.array([251, 240, 187]),
-                     blue=np.array([210, 255, 245]))
+                     blue=np.array([210, 255, 245]),
+                     blue2=np.array([192, 240, 246]))
     im = imread(fname)
-    if im.shape[2] > 3:
+    if len(im.shape) > 2 and im.shape[2] > 3:
         im = rgba2rgb(im)*255
     im_files = {}
     for key, template in templates.items():
@@ -37,9 +38,12 @@ def save_highlight_extract(im, bounds, color, fname):
         imsave(os.path.join(path, f), tmp.astype('uint8'))
     return fnames
 
-def get_highlighted_regions(im, color, threshold=6):
-    disk_size = 7
+def get_highlighted_regions(im, color, threshold=8):
+    disk_size = 12
     # reshape to 2d matrix
+    if len(im.shape) < 3:
+        im = np.tile(im, (3, 1, 1))
+        im = np.moveaxis(im, 0, -1)
     im_tmp = im.reshape((im.shape[0]*im.shape[1], im.shape[2]))
     template = np.repeat(color, im_tmp.shape[0]).reshape((3, -1)).T
     # subtract the template from the image
