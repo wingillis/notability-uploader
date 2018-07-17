@@ -14,7 +14,7 @@
     <key>ProgramArguments</key>
     <array>
 				<string>/Users/wgillis/anaconda2/bin/python</string>
-        <string>/Users/wgillis/dev/notability-uploader/main.py</string>
+        <string>/Users/wgillis/dev/general-lab-code/notability-uploader/main.py</string>
     </array>
     <!-- Run every 4 hours -->
 		<key>StandardErrorPath</key>
