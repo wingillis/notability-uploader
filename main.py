@@ -12,6 +12,7 @@ import highlight_finder as hf
 from evernote.api.client import EvernoteClient
 from evernote.edam.type import ttypes
 
+
 def main():
     rcfile = os.path.expanduser('~/.oryxrc')
     script_path = os.path.dirname(__file__)
@@ -22,8 +23,10 @@ def main():
     with open(rcfile, 'r') as f:
         config = json.load(f)
     pdf_path = '/Users/wgillis/Dropbox (HMS)/Notability/'
-    pdf_files = glob.glob(os.path.join(pdf_path, '**', '*.pdf')) + glob.glob(os.path.join(pdf_path, '*.pdf'))
-    pdf_files = [f for f in pdf_files if (os.stat(f).st_mtime > last_checked) and ('Linear Algebra' not in f)]
+    pdf_files = glob.glob(os.path.join(pdf_path, '**', '*.pdf')) + \
+        glob.glob(os.path.join(pdf_path, '*.pdf'))
+    pdf_files = [f for f in pdf_files if (
+        os.stat(f).st_mtime > last_checked) and ('Linear Algebra' not in f)]
     tags = [os.path.dirname(f.replace(pdf_path, '')) for f in pdf_files]
     client = EvernoteClient(token=config['devToken'], sandbox=False)
     note_store = client.get_note_store()
@@ -48,6 +51,7 @@ def main():
     with open(time_file, 'w') as f:
         pickle.dump(start_time, f)
 
+
 def create_highlights(imgs):
     highlights = defaultdict(list)
     for im in imgs:
@@ -57,11 +61,11 @@ def create_highlights(imgs):
                 highlights[key] += tmp[key]
     return highlights
 
+
 def create_resource(pdf, typ='application/pdf'):
     m5hash = hashlib.md5()
     resource = ttypes.Resource()
     rattr = ttypes.ResourceAttributes()
-    # rattr.attachment = True
     rattr.fileName = os.path.basename(pdf)
     resource.mime = typ
     resource.attributes = rattr
@@ -75,6 +79,7 @@ def create_resource(pdf, typ='application/pdf'):
     data.body = contents
     resource.data = data
     return resource, h
+
 
 def create_note(notebook, pdf, images, tag):
     '''images is a len=2 list where first are blue and then yellow highlights'''
@@ -104,11 +109,15 @@ def create_note(notebook, pdf, images, tag):
     note.resources = resources
     return note
 
+
 def pdf_to_image(pdf_path, quality=100, typ='png', density=150):
     handle, path = tempfile.mkstemp()
-    subprocess.check_call(['/usr/local/bin/convert', '-density', str(density), pdf_path, '-quality', str(quality), path+'.'+typ])
+    subprocess.check_call(['/usr/local/bin/convert', '-density', str(density),
+                           '-colorspace', 'sRGB', pdf_path, '-quality',
+                           str(quality), path + '.' + typ])
     files = glob.glob(path + '*.' + typ)
     return files
 
-if __name__=='__main__':
+
+if __name__ == '__main__':
     main()
